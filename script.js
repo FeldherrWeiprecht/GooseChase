@@ -1,4 +1,5 @@
 var cursor = document.getElementById("custom-cursor");
+var goose = document.getElementById("goose");
 
 var netWidth = 128;
 var netHeight = 128;
@@ -27,3 +28,30 @@ document.addEventListener("mouseenter", function() {
 document.addEventListener("mouseleave", function() {
   cursor.style.display = "none";
 });
+
+var spawnMargin = 300;
+
+function getRandomPosition(maxWidth, maxHeight) {
+  var x = Math.random() * (window.innerWidth - maxWidth - spawnMargin * 2) + spawnMargin;
+  var y = Math.random() * (window.innerHeight - maxHeight - spawnMargin * 2) + spawnMargin;
+
+  return {
+    x: Math.floor(x),
+    y: Math.floor(y)
+  };
+}
+
+function showGoose() {
+  var width = goose.offsetWidth;
+  var height = goose.offsetHeight;
+
+  var position = getRandomPosition(width, height);
+
+  goose.style.left = position.x + "px";
+  goose.style.top = position.y + "px";
+  goose.style.display = "block";
+}
+
+window.onload = function() {
+  showGoose();
+};

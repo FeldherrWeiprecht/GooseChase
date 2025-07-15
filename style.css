@@ -71,3 +71,16 @@ html, body {
   z-index: 1000;
   pointer-events: none;
 }
+
+#goose {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 15vmin;
+  height: 15vmin;
+  background-image: url("assets/goose_idle_right.png");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 10;
+}
