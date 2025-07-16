@@ -1,5 +1,6 @@
 var cursor = document.getElementById("custom-cursor");
 var goose = document.getElementById("goose");
+var corners = document.querySelectorAll(".corner");
 
 var netWidth = 128;
 var netHeight = 128;
@@ -35,28 +36,56 @@ document.addEventListener("mouseleave", function() {
 
 function isInCorner(x, y, width, height) {
   var cornerSize = 150;
+
   var right = window.innerWidth - width;
   var bottom = window.innerHeight - height;
 
   var inTopLeft = x < cornerSize && y < cornerSize;
-  var inTopRight = x > right - cornerSize && y < cornerSize;
   var inBottomLeft = x < cornerSize && y > bottom - cornerSize;
+  var inTopRight = x > right - cornerSize && y < cornerSize;
   var inBottomRight = x > right - cornerSize && y > bottom - cornerSize;
 
-  return inTopLeft || inTopRight || inBottomLeft || inBottomRight;
+  return inTopLeft || inBottomLeft || inTopRight || inBottomRight;
+}
+
+function isTouchingAnyCorner(gooseRect) {
+  for (var i = 0; i < corners.length; i++) {
+    var cornerRect = corners[i].getBoundingClientRect();
+
+    var shrink = 120;
+
+    var left = cornerRect.left + shrink;
+    var top = cornerRect.top + shrink;
+    var right = cornerRect.right - shrink;
+    var bottom = cornerRect.bottom - shrink;
+
+    var overlap = gooseRect.right > left && gooseRect.left < right && gooseRect.bottom > top && gooseRect.top < bottom;
+    if (overlap) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function getRandomPosition(maxWidth, maxHeight) {
-  var x, y;
+  var x, y, dx, dy, distance;
+
   var minX = spawnMargin;
   var minY = spawnMargin;
+
   var maxX = window.innerWidth - maxWidth - spawnMargin;
   var maxY = window.innerHeight - maxHeight - spawnMargin;
 
   do {
     x = Math.random() * (maxX - minX) + minX;
     y = Math.random() * (maxY - minY) + minY;
-  } while (isInCorner(x, y, maxWidth, maxHeight));
+
+    dx = x - mouseX;
+    dy = y - mouseY;
+    distance = Math.sqrt(dx * dx + dy * dy);
+
+  } while (isInCorner(x, y, maxWidth, maxHeight) || distance < safeDistance);
 
   return {
     x: Math.floor(x),
@@ -67,6 +96,13 @@ function getRandomPosition(maxWidth, maxHeight) {
 function showGoose() {
   var width = goose.offsetWidth;
   var height = goose.offsetHeight;
+
+  if (width === 0) {
+    width = 150;
+  }
+  if (height === 0) {
+    height = 150;
+  }
 
   var position = getRandomPosition(width, height);
 
@@ -154,5 +190,21 @@ window.onload = function() {
 };
 
 setInterval(function() {
+  var gooseRect = goose.getBoundingClientRect();
+
+  if (goose.style.display === "none") {
+    return;
+  }
+
+  if (isTouchingAnyCorner(gooseRect)) {
+    goose.style.display = "none";
+
+    setTimeout(function() {
+      showGoose();
+    }, 300);
+    
+    return;
+  }
+
   moveGooseIfTooClose();
 }, 16);
