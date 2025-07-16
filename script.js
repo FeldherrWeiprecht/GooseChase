@@ -9,7 +9,7 @@ var offsetY = netHeight / 2;
 var mouseX = 0;
 var mouseY = 0;
 
-var safeDistance = 150;
+var safeDistance = 120;
 var moveDistance = 60;
 var spawnMargin = 150;
 
@@ -77,11 +77,16 @@ function showGoose() {
 
 function moveGooseIfTooClose() {
   var gooseRect = goose.getBoundingClientRect();
+  var cursorRect = cursor.getBoundingClientRect();
+
   var gooseCenterX = gooseRect.left + gooseRect.width / 2;
   var gooseCenterY = gooseRect.top + gooseRect.height / 2;
 
-  var dx = gooseCenterX - mouseX;
-  var dy = gooseCenterY - mouseY;
+  var cursorCenterX = cursorRect.left + cursorRect.width / 2;
+  var cursorCenterY = cursorRect.top + cursorRect.height / 2;
+
+  var dx = gooseCenterX - cursorCenterX;
+  var dy = gooseCenterY - cursorCenterY;
   var distance = Math.sqrt(dx * dx + dy * dy);
 
   if (distance < safeDistance) {
@@ -109,12 +114,11 @@ function moveGooseIfTooClose() {
       direction = "right";
     }
 
-    goose.style.left = newLeft + "px";
-    goose.style.top = newTop + "px";
-
     var idleImage = "url('assets/goose_idle_" + direction + ".png')";
     var walkImage = "url('assets/goose_walk_" + direction + ".png')";
 
+    goose.style.left = newLeft + "px";
+    goose.style.top = newTop + "px";
     goose.style.backgroundImage = walkImage;
 
     clearTimeout(goose.walkTimeout1);
