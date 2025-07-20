@@ -1,6 +1,8 @@
 var cursor = document.getElementById("custom-cursor");
 var goose = document.getElementById("goose");
 var corners = document.querySelectorAll(".corner");
+var startScreen = document.getElementById("start-screen");
+var startButton = document.getElementById("start-button");
 
 var netWidth = 128;
 var netHeight = 128;
@@ -10,11 +12,17 @@ var offsetY = netHeight / 2;
 var mouseX = 0;
 var mouseY = 0;
 
-var safeDistance = 120;
+var safeDistance = 100;
 var moveDistance = 60;
 var spawnMargin = 150;
 
+var gameStarted = false;
+
 document.addEventListener("mousemove", function(event) {
+  if (gameStarted === false) {
+    return;
+  }
+
   mouseX = event.clientX;
   mouseY = event.clientY;
 
@@ -27,10 +35,18 @@ document.addEventListener("mousemove", function(event) {
 });
 
 document.addEventListener("mouseenter", function() {
+  if (gameStarted === false) {
+    return;
+  }
+
   cursor.style.display = "block";
 });
 
 document.addEventListener("mouseleave", function() {
+  if (gameStarted === false) {
+    return;
+  }
+
   cursor.style.display = "none";
 });
 
@@ -45,11 +61,29 @@ function isInCorner(x, y, width, height) {
   var inTopRight = x > right - cornerSize && y < cornerSize;
   var inBottomRight = x > right - cornerSize && y > bottom - cornerSize;
 
-  return inTopLeft || inBottomLeft || inTopRight || inBottomRight;
+  if (inTopLeft) {
+    return true;
+  }
+
+  if (inBottomLeft) {
+    return true;
+  }
+
+  if (inTopRight) {
+    return true;
+  }
+
+  if (inBottomRight) {
+    return true;
+  }
+
+  return false;
 }
 
 function isTouchingAnyCorner(gooseRect) {
-  for (var i = 0; i < corners.length; i++) {
+  var i = 0;
+
+  while (i < corners.length) {
     var cornerRect = corners[i].getBoundingClientRect();
 
     var shrink = 120;
@@ -60,16 +94,23 @@ function isTouchingAnyCorner(gooseRect) {
     var bottom = cornerRect.bottom - shrink;
 
     var overlap = gooseRect.right > left && gooseRect.left < right && gooseRect.bottom > top && gooseRect.top < bottom;
+
     if (overlap) {
       return true;
     }
+
+    i = i + 1;
   }
 
   return false;
 }
 
 function getRandomPosition(maxWidth, maxHeight) {
-  var x, y, dx, dy, distance;
+  var x = 0;
+  var y = 0;
+  var dx = 0;
+  var dy = 0;
+  var distance = 0;
 
   var minX = spawnMargin;
   var minY = spawnMargin;
@@ -77,7 +118,9 @@ function getRandomPosition(maxWidth, maxHeight) {
   var maxX = window.innerWidth - maxWidth - spawnMargin;
   var maxY = window.innerHeight - maxHeight - spawnMargin;
 
-  do {
+  var valid = false;
+
+  while (valid === false) {
     x = Math.random() * (maxX - minX) + minX;
     y = Math.random() * (maxY - minY) + minY;
 
@@ -85,12 +128,17 @@ function getRandomPosition(maxWidth, maxHeight) {
     dy = y - mouseY;
     distance = Math.sqrt(dx * dx + dy * dy);
 
-  } while (isInCorner(x, y, maxWidth, maxHeight) || distance < safeDistance);
+    if (isInCorner(x, y, maxWidth, maxHeight) === false && distance >= safeDistance) {
+      valid = true;
+    }
+  }
 
-  return {
+  var result = {
     x: Math.floor(x),
     y: Math.floor(y)
   };
+
+  return result;
 }
 
 function showGoose() {
@@ -100,6 +148,7 @@ function showGoose() {
   if (width === 0) {
     width = 150;
   }
+
   if (height === 0) {
     height = 150;
   }
@@ -135,17 +184,21 @@ function moveGooseIfTooClose() {
     if (newLeft < 0) {
       newLeft = 0;
     }
+
     if (newLeft > window.innerWidth - goose.offsetWidth) {
       newLeft = window.innerWidth - goose.offsetWidth;
     }
+
     if (newTop < 0) {
       newTop = 0;
     }
+
     if (newTop > window.innerHeight - goose.offsetHeight) {
       newTop = window.innerHeight - goose.offsetHeight;
     }
 
     var direction = "left";
+
     if (moveX > 0) {
       direction = "right";
     }
@@ -185,24 +238,31 @@ function moveGooseIfTooClose() {
   }
 }
 
-window.onload = function() {
+startButton.addEventListener("click", function() {
+  startScreen.style.display = "none";
+  document.body.classList.add("playing");
+  gameStarted = true;
   showGoose();
-};
+});
 
 setInterval(function() {
+  if (gameStarted === false) {
+    return;
+  }
+
   var gooseRect = goose.getBoundingClientRect();
 
   if (goose.style.display === "none") {
     return;
   }
 
-  if (isTouchingAnyCorner(gooseRect)) {
+  if (isTouchingAnyCorner(gooseRect) === true) {
     goose.style.display = "none";
 
     setTimeout(function() {
       showGoose();
     }, 300);
-    
+
     return;
   }
 
