@@ -17,6 +17,10 @@ var moveDistance = 60;
 var spawnMargin = 150;
 
 var gameStarted = false;
+var gooseIsMoving = false;
+var gooseDirection = "right";
+var gooseAnimationInterval = null;
+var gooseAnimationState = "idle";
 
 document.addEventListener("mousemove", function(event) {
   if (gameStarted === false) {
@@ -157,7 +161,41 @@ function showGoose() {
 
   goose.style.left = position.x + "px";
   goose.style.top = position.y + "px";
+
+  if (position.x > mouseX) {
+    gooseDirection = "left";
+  } else {
+    gooseDirection = "right";
+  }
+
+  goose.style.backgroundImage = "url('assets/goose_idle_" + gooseDirection + ".png')";
   goose.style.display = "block";
+}
+
+function startGooseAnimation(direction) {
+  if (gooseAnimationInterval !== null) {
+    return;
+  }
+
+  gooseAnimationState = "walk";
+  goose.style.backgroundImage = "url('assets/goose_walk_" + direction + ".png')";
+
+  gooseAnimationInterval = setInterval(function() {
+    if (gooseIsMoving === false) {
+      clearInterval(gooseAnimationInterval);
+      gooseAnimationInterval = null;
+      goose.style.backgroundImage = "url('assets/goose_idle_" + direction + ".png')";
+      return;
+    }
+
+    if (gooseAnimationState === "walk") {
+      goose.style.backgroundImage = "url('assets/goose_idle_" + direction + ".png')";
+      gooseAnimationState = "idle";
+    } else {
+      goose.style.backgroundImage = "url('assets/goose_walk_" + direction + ".png')";
+      gooseAnimationState = "walk";
+    }
+  }, 80);
 }
 
 function moveGooseIfTooClose() {
@@ -197,44 +235,17 @@ function moveGooseIfTooClose() {
       newTop = window.innerHeight - goose.offsetHeight;
     }
 
-    var direction = "left";
-
-    if (moveX > 0) {
-      direction = "right";
-    }
-
-    var idleImage = "url('assets/goose_idle_" + direction + ".png')";
-    var walkImage = "url('assets/goose_walk_" + direction + ".png')";
+    gooseDirection = moveX > 0 ? "right" : "left";
+    gooseIsMoving = true;
+    startGooseAnimation(gooseDirection);
 
     goose.style.left = newLeft + "px";
     goose.style.top = newTop + "px";
-    goose.style.backgroundImage = walkImage;
 
-    clearTimeout(goose.walkTimeout1);
-    clearTimeout(goose.walkTimeout2);
-    clearTimeout(goose.walkTimeout3);
-    clearTimeout(goose.walkTimeout4);
-    clearTimeout(goose.walkTimeout5);
-
-    goose.walkTimeout1 = setTimeout(function() {
-      goose.style.backgroundImage = idleImage;
-    }, 80);
-
-    goose.walkTimeout2 = setTimeout(function() {
-      goose.style.backgroundImage = walkImage;
-    }, 160);
-
-    goose.walkTimeout3 = setTimeout(function() {
-      goose.style.backgroundImage = idleImage;
-    }, 240);
-
-    goose.walkTimeout4 = setTimeout(function() {
-      goose.style.backgroundImage = walkImage;
-    }, 320);
-
-    goose.walkTimeout5 = setTimeout(function() {
-      goose.style.backgroundImage = idleImage;
-    }, 400);
+    clearTimeout(goose.stopTimeout);
+    goose.stopTimeout = setTimeout(function() {
+      gooseIsMoving = false;
+    }, 200);
   }
 }
 
