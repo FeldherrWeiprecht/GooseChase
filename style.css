@@ -9,6 +9,8 @@ html, body {
 
 body {
   cursor: default;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 body.playing {

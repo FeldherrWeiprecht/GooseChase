@@ -46,6 +46,45 @@ document.addEventListener("mousemove", function(event) {
   cursor.style.display = "block";
 });
 
+document.addEventListener("touchstart", function(event) {
+  if (gameStarted === false) {
+    return;
+  }
+
+  var touch = event.touches[0];
+  mouseX = touch.clientX;
+  mouseY = touch.clientY;
+
+  cursor.style.left = mouseX + "px";
+  cursor.style.top = mouseY + "px";
+  cursor.style.display = "block";
+
+  event.preventDefault();
+}, { passive: false });
+
+document.addEventListener("touchmove", function(event) {
+  if (gameStarted === false) {
+    return;
+  }
+
+  var touch = event.touches[0];
+  mouseX = touch.clientX;
+  mouseY = touch.clientY;
+
+  cursor.style.left = mouseX + "px";
+  cursor.style.top = mouseY + "px";
+
+  event.preventDefault();
+}, { passive: false });
+
+document.addEventListener("touchend", function() {
+  if (gameStarted === false) {
+    return;
+  }
+
+  cursor.style.display = "none";
+});
+
 document.addEventListener("mouseenter", function() {
   if (gameStarted === false) {
     return;
@@ -96,14 +135,14 @@ function isTouchingAnyCorner(gooseRect) {
   var i = 0;
 
   while (i < corners.length) {
-    var cornerRect = corners[i].getBoundingClientRect();
+    var rect = corners[i].getBoundingClientRect();
 
-    var shrink = 120;
+    var shrink = 90;
 
-    var left = cornerRect.left + shrink;
-    var top = cornerRect.top + shrink;
-    var right = cornerRect.right - shrink;
-    var bottom = cornerRect.bottom - shrink;
+    var left = rect.left + shrink;
+    var top = rect.top + shrink;
+    var right = rect.right - shrink;
+    var bottom = rect.bottom - shrink;
 
     var overlap = gooseRect.right > left && gooseRect.left < right && gooseRect.bottom > top && gooseRect.top < bottom;
 
@@ -145,12 +184,10 @@ function getRandomPosition(maxWidth, maxHeight) {
     }
   }
 
-  var result = {
+  return {
     x: Math.floor(x),
     y: Math.floor(y)
   };
-
-  return result;
 }
 
 function showGoose() {
@@ -202,13 +239,12 @@ function startGooseAnimation(direction) {
 
 function moveGooseIfTooClose() {
   var gooseRect = goose.getBoundingClientRect();
-  var cursorRect = cursor.getBoundingClientRect();
 
   var gooseCenterX = gooseRect.left + gooseRect.width / 2;
   var gooseCenterY = gooseRect.top + gooseRect.height / 2;
 
-  var cursorCenterX = cursorRect.left + cursorRect.width / 2;
-  var cursorCenterY = cursorRect.top + cursorRect.height / 2;
+  var cursorCenterX = mouseX;
+  var cursorCenterY = mouseY;
 
   var dx = gooseCenterX - cursorCenterX;
   var dy = gooseCenterY - cursorCenterY;

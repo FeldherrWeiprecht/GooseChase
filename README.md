@@ -53,6 +53,11 @@ Alternatively if you are using VS Code, you can use the `Live Server` extension 
 - `script.js` – Game logic.
 - `assets/` – Contains all sprites (background, goose, net, etc.)
 
+## Notes
+
+- GooseChase is fully playable with `mouse` or `touch`, so you can use your laptop or your smartphone.
+- For the best experience make sure your browser is set to `100% zoom level` especially on desktops and laptops. Because incorrect zoom settings may cause input or positioning issues.
+
 ## Example
 
 ![Example Image](examples/example3.png)
