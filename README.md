@@ -6,6 +6,12 @@
 
 GooseChase is a fun and chaotic browser game where you try to catch a goose with your net. The goose runs away when you get too close, making it harder than it looks. Be fast, smart and lucky to catch as many geese as possible before the time runs out.
 
+## Play Online
+
+A live version is hosted here:
+
+[GitHub Pages Demo Link](https://feldherrweiprecht.github.io/GooseChase/)
+
 ## How It Works
 
 1. Shows a start screen with instructions and a start button.
@@ -49,4 +55,4 @@ Alternatively if you are using VS Code, you can use the `Live Server` extension 
 
 ## Example
 
-![Example Image](example3.png)
+![Example Image](examples/example3.png)
