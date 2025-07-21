@@ -75,7 +75,7 @@ body.playing {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  z-index: 1000;
+  z-index: 2001;
   pointer-events: none;
 }
 
@@ -91,6 +91,24 @@ body.playing {
   background-repeat: no-repeat;
   z-index: 10;
   display: none;
+}
+
+#ui-box {
+  position: fixed;
+  top: 2vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f47c22;
+  padding: 1.5vmin 3vmin;
+  border-radius: 1.5vmin;
+  z-index: 2000;
+  font-family: Arial, sans-serif;
+  color: black;
+  display: flex;
+  justify-content: space-between;
+  gap: 6vmin;
+  font-size: 2.5vmin;
+  font-weight: bold;
 }
 
 #start-screen {
@@ -113,8 +131,8 @@ body.playing {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 800px;
-  width: 90vw;
+  max-width: 1000px;
+  width: 95vw;
 }
 
 #start-logo {

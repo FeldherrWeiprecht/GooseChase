@@ -4,6 +4,9 @@ var corners = document.querySelectorAll(".corner");
 var startScreen = document.getElementById("start-screen");
 var startButton = document.getElementById("start-button");
 
+var scoreDisplay = document.getElementById("score-display");
+var timerDisplay = document.getElementById("timer-display");
+
 var netWidth = 128;
 var netHeight = 128;
 var offsetX = netWidth / 2;
@@ -22,6 +25,10 @@ var gooseDirection = "right";
 var gooseAnimationInterval = null;
 var gooseAnimationState = "idle";
 
+var score = 0;
+var timeRemaining = 30.0;
+var timerInterval = null;
+
 document.addEventListener("mousemove", function(event) {
   if (gameStarted === false) {
     return;
@@ -30,11 +37,8 @@ document.addEventListener("mousemove", function(event) {
   mouseX = event.clientX;
   mouseY = event.clientY;
 
-  var left = mouseX;
-  var top = mouseY;
-
-  cursor.style.left = left + "px";
-  cursor.style.top = top + "px";
+  cursor.style.left = mouseX + "px";
+  cursor.style.top = mouseY + "px";
   cursor.style.display = "block";
 });
 
@@ -249,10 +253,44 @@ function moveGooseIfTooClose() {
   }
 }
 
+function startTimer() {
+  var startTime = Date.now();
+
+  timerInterval = setInterval(function() {
+    if (gameStarted === false) {
+      return;
+    }
+
+    var now = Date.now();
+    var elapsed = (now - startTime) / 1000;
+    var remaining = 30.0 - elapsed;
+
+    if (remaining < 0) {
+      remaining = 0;
+    }
+
+    timeRemaining = remaining;
+    timerDisplay.textContent = "Time Left: " + timeRemaining.toFixed(1) + "s";
+
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval);
+      gameStarted = false;
+      cursor.style.display = "none";
+      goose.style.display = "none";
+      alert("Time’s up! You caught " + score + " geese.");
+    }
+  }, 100);
+}
+
 startButton.addEventListener("click", function() {
   startScreen.style.display = "none";
   document.body.classList.add("playing");
   gameStarted = true;
+  score = 0;
+  timeRemaining = 30.0;
+  scoreDisplay.textContent = "Geese Caught: 0";
+  timerDisplay.textContent = "Time Left: 30.0s";
+  startTimer();
   showGoose();
 });
 
@@ -268,6 +306,8 @@ setInterval(function() {
   }
 
   if (isTouchingAnyCorner(gooseRect) === true) {
+    score = score + 1;
+    scoreDisplay.textContent = "Geese Caught: " + score;
     goose.style.display = "none";
 
     setTimeout(function() {
