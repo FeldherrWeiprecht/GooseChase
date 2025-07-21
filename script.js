@@ -237,17 +237,30 @@ function moveGooseIfTooClose() {
       newTop = window.innerHeight - goose.offsetHeight;
     }
 
-    var direction = moveX > 0 ? "right" : "left";
     gooseIsMoving = true;
-    startGooseAnimation(direction);
+
+    if (moveX > 0) {
+      startGooseAnimation("right");
+    } else {
+      startGooseAnimation("left");
+    }
 
     goose.style.left = newLeft + "px";
     goose.style.top = newTop + "px";
 
     clearTimeout(goose.stopTimeout);
+
     goose.stopTimeout = setTimeout(function() {
       gooseIsMoving = false;
     }, 200);
+  }
+
+  if (gooseIsMoving === false) {
+    if (cursorCenterX < gooseCenterX) {
+      goose.style.backgroundImage = "url('assets/goose_idle_right.png')";
+    } else {
+      goose.style.backgroundImage = "url('assets/goose_idle_left.png')";
+    }
   }
 }
 
