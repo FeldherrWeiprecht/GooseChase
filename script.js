@@ -1,8 +1,13 @@
 var cursor = document.getElementById("custom-cursor");
 var goose = document.getElementById("goose");
 var corners = document.querySelectorAll(".corner");
+
 var startScreen = document.getElementById("start-screen");
 var startButton = document.getElementById("start-button");
+
+var endScreen = document.getElementById("end-screen");
+var endScoreText = document.getElementById("end-score-text");
+var restartButton = document.getElementById("restart-button");
 
 var scoreDisplay = document.getElementById("score-display");
 var timerDisplay = document.getElementById("timer-display");
@@ -15,13 +20,12 @@ var offsetY = netHeight / 2;
 var mouseX = 0;
 var mouseY = 0;
 
-var safeDistance = 100;
+var safeDistance = 110;
 var moveDistance = 60;
 var spawnMargin = 150;
 
 var gameStarted = false;
 var gooseIsMoving = false;
-var gooseDirection = "right";
 var gooseAnimationInterval = null;
 var gooseAnimationState = "idle";
 
@@ -166,13 +170,7 @@ function showGoose() {
   goose.style.left = position.x + "px";
   goose.style.top = position.y + "px";
 
-  if (position.x > mouseX) {
-    gooseDirection = "left";
-  } else {
-    gooseDirection = "right";
-  }
-
-  goose.style.backgroundImage = "url('assets/goose_idle_" + gooseDirection + ".png')";
+  goose.style.backgroundImage = "url('assets/goose_idle_right.png')";
   goose.style.display = "block";
 }
 
@@ -239,9 +237,9 @@ function moveGooseIfTooClose() {
       newTop = window.innerHeight - goose.offsetHeight;
     }
 
-    gooseDirection = moveX > 0 ? "right" : "left";
+    var direction = moveX > 0 ? "right" : "left";
     gooseIsMoving = true;
-    startGooseAnimation(gooseDirection);
+    startGooseAnimation(direction);
 
     goose.style.left = newLeft + "px";
     goose.style.top = newTop + "px";
@@ -277,13 +275,16 @@ function startTimer() {
       gameStarted = false;
       cursor.style.display = "none";
       goose.style.display = "none";
-      alert("Time’s up! You caught " + score + " geese.");
+      document.body.classList.remove("playing");
+      endScoreText.textContent = "You caught " + score + " geese.";
+      endScreen.style.display = "flex";
     }
   }, 100);
 }
 
-startButton.addEventListener("click", function() {
+function startGame() {
   startScreen.style.display = "none";
+  endScreen.style.display = "none";
   document.body.classList.add("playing");
   gameStarted = true;
   score = 0;
@@ -292,6 +293,14 @@ startButton.addEventListener("click", function() {
   timerDisplay.textContent = "Time Left: 30.0s";
   startTimer();
   showGoose();
+}
+
+startButton.addEventListener("click", function() {
+  startGame();
+});
+
+restartButton.addEventListener("click", function() {
+  startGame();
 });
 
 setInterval(function() {
